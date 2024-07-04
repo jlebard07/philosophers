@@ -12,17 +12,66 @@
 
 #include "../includes/philosophers.h"
 
-void	init_rules(t_rules	*rules)
+static void	assign_forks(t_philo *philo, t_dinner *dinner)
 {
 	int	i;
 
 	i = 0;
-	t_rules->forks = malloc(sizeof(t_fork) * t_rules->nb_of_philo);
-	if (t_rules->forks = NULL)
-		exit_error("Pb Malloc\n");
-	while (t_rules->forks[i])
+	while (philo[i])
 	{
-		if (pthread_mutex_init(&(t_fork->forks[i++].fork), NULL) != 0)
-			exit_error("Erreur lors de l'initialisation d'un mutex");
+		if (philo[i]->id_philo == dinner->nb_of_philo && \
+		philo[i]->id_philo % 2 == 1)
+		{
+			philo[i]->first_fork = dinner->forks[philo->id_philo];
+			philo[i]->second_fork = dinner->forks[philo->id_philo - 1];
+		}
+		else if (philo[i]->id_philo % 2 == 1)
+		{
+			philo->first_fork = dinner->fork[philo->id_philo];
+			philo->second_fork = dinner->fork[philo->id_philo - 1];
+		}
+		else
+		{
+			philo->first_fork = dinner->fork[philo->id_philo - 1];
+			philo->second_fork = dinner->fork[philo->id_philo];
+		}
 	}
+}
+
+static void	init_philos(t_dinner *dinner)
+{
+	int		i;
+	t_philo	*philo;
+	
+	i = 0;
+	philo = dinner->philos;
+	philo = malloc(sizeof(t_philo) * rules->nb_of_philo);
+	if (rules->philo == NULL)
+	{
+		free(dinner)
+		exit_error("Pb Malloc.\n");
+	}
+	while (rules->philo[i])
+	{
+		philo[i].full = 0;
+		philo[i].nb_of_meal = 0;
+		philo[i].id_philo = ++i;
+	}
+	assign_forks(philo, dinner);
+}
+
+void	init_dinner(t_dinner *dinner)
+{
+	int	i;
+
+	i = 0;
+	rules->forks = malloc(sizeof(t_fork) * rules->nb_of_philo);
+	if (rules->forks = NULL)
+		exit_error("Pb Malloc.\n");
+	while (rules->forks[i])
+	{
+		handle_mutex(&(rules->forks[i].mtx_fork), CREATE);
+		rules->forks[i].id_fork = ++i;
+	}
+	init_philos(dinner);
 }
