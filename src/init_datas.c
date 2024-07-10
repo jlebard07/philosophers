@@ -12,28 +12,28 @@
 
 #include "../includes/philosophers.h"
 
-static void	assign_forks(t_philo *philo, t_dinner *dinner)
+static void	assign_forks(t_philo *philos, t_dinner *dinner)
 {
 	int	i;
 
 	i = 0;
-	while (philo[i])
+	while (i < dinner->rules.nb_of_philo)
 	{
-		if (philo[i]->id_philo == dinner->nb_of_philo && \
-		philo[i]->id_philo % 2 == 1)
+		if (philos[i].id_philo == dinner->rules.nb_of_philo && \
+		philos[i].id_philo % 2 == 1)
 		{
-			philo[i]->first_fork = dinner->forks[philo->id_philo];
-			philo[i]->second_fork = dinner->forks[philo->id_philo - 1];
+			philos[i].first_fork = &(dinner->forks[philos[i].id_philo]);
+			philos[i].second_fork = &(dinner->forks[philos[i].id_philo - 1]);
 		}
-		else if (philo[i]->id_philo % 2 == 1)
+		else if (philos[i].id_philo % 2 == 1)
 		{
-			philo->first_fork = dinner->fork[philo->id_philo];
-			philo->second_fork = dinner->fork[philo->id_philo - 1];
+			philos[i].first_fork = &(dinner->forks[philos[i].id_philo]);
+			philos[i].second_fork = &(dinner->forks[philos[i].id_philo - 1]);
 		}
 		else
 		{
-			philo->first_fork = dinner->fork[philo->id_philo - 1];
-			philo->second_fork = dinner->fork[philo->id_philo];
+			philos[i].first_fork = &(dinner->forks[philos[i].id_philo - 1]);
+			philos[i].second_fork = &(dinner->forks[philos[i].id_philo]);
 		}
 	}
 }
@@ -41,23 +41,24 @@ static void	assign_forks(t_philo *philo, t_dinner *dinner)
 static void	init_philos(t_dinner *dinner)
 {
 	int		i;
-	t_philo	*philo;
+	t_philo	*philos;
 	
 	i = 0;
-	philo = dinner->philos;
-	philo = malloc(sizeof(t_philo) * rules->nb_of_philo);
-	if (rules->philo == NULL)
+	philos = malloc(sizeof(t_philo) * dinner->rules.nb_of_philo);
+	if (philos == NULL)
 	{
-		free(dinner)
+		free_dinner(dinner);
 		exit_error("Pb Malloc.\n");
 	}
-	while (rules->philo[i])
+	dinner->philos = philos;
+	while (i < dinner->rules.nb_of_philo)
 	{
-		philo[i].full = 0;
-		philo[i].nb_of_meal = 0;
-		philo[i].id_philo = ++i;
+		philos[i].full = 0;
+		philos[i].nb_of_meals = 0;
+		philos[i].atable = &(dinner->rules);
+		philos[i].id_philo = ++i;
 	}
-	assign_forks(philo, dinner);
+	assign_forks(dinner->philos, dinner);
 }
 
 void	init_dinner(t_dinner *dinner)
@@ -65,13 +66,13 @@ void	init_dinner(t_dinner *dinner)
 	int	i;
 
 	i = 0;
-	rules->forks = malloc(sizeof(t_fork) * rules->nb_of_philo);
-	if (rules->forks = NULL)
+	dinner->forks = malloc(sizeof(t_fork) * dinner->rules.nb_of_philo);
+	if (dinner->forks = NULL)
 		exit_error("Pb Malloc.\n");
-	while (rules->forks[i])
+	while (i < dinner->rules.nb_of_philo)
 	{
-		handle_mutex(&(rules->forks[i].mtx_fork), CREATE);
-		rules->forks[i].id_fork = ++i;
+		handle_mutex(&(dinner->forks[i].mtx_fork), CREATE);
+		dinner->forks[i].id_fork = ++i;
 	}
 	init_philos(dinner);
 }

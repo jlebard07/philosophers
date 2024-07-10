@@ -19,4 +19,6 @@ int		main(int argc, char **argv)
 	if (argc != 5 && argc != 6)
 		exit_error("Rentrez le bon nombre d'arguments\n");
 	parse(dinner.rules, argv);
+	innit_dinner(&dinner);
+	time_to_eat(&dinner);
 }

@@ -48,13 +48,14 @@ typedef struct s_philos
 	pthread_t	th_philo;
 	t_fork		*first_fork;
 	t_fork		*second_fork;
+	t_rules		*atable;
 }	t_philo;
 
 // struct pour les forks
 typedef struct s_forks
 {
 	int				id_fork;
-	p_thread_mutex	mtx_fork;
+	pthread_mutex_t	mtx_fork;
 }	t_fork;
 
 // struct règles
@@ -65,14 +66,16 @@ typedef struct	s_rules
 	long		eat_time;
 	long		sleep_time;
 	int			must_eat;
+	bool		threads_ready;
+	pthread_mutex_t	rules_mtx;
 }	t_rules;
 
 // struct global 
 typedef struct s_dinner
 {
-	t_rules		*rules
+	t_rules		rules;
 	t_fork		*forks;
-	t_philos	*philos;
+	t_philo		*philos;
 }	t_dinner;
 
 //fonctions threads et mutex
@@ -84,13 +87,22 @@ void	handle_thread(pthread_t *thread, void *(*f)(void*), void *arg,
 void	exit_error(char *s);
 void	free_dinner(t_dinner *dinner);
 
+//getters and setters
+void	set_bool(pthread_mutex_t mtx, bool *dest, bool value);
+bool	get_bool(pthread_mutex_t mtx, bool *value);
+void	set_long(pthread_mutex_t mtx, long *dest, long value);
+long	get_long(pthread_mutex_t mtx, long *value);
+
 // parsing
-void	parse(t_rules *rules, char **argv);
+void	parse(t_rules rules, char **argv);
 
 //main
 int		main(int argc, char **argv);
 
 //inits
-void	init_dinner(t_dinner *dinner)
+void	init_dinner(t_dinner *dinner);
+
+//simulation
+void	time_to_eat(t_dinner *dinner);
 
 #endif

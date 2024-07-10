@@ -15,15 +15,15 @@
 static void	mutex_error(int status, t_mtxcode mtxcode)
 {
 	if (status == 0)
-		return 
+		return ;
 	else if (status == EINVAL && (mtxcode == LOCK || mtxcode == UNLOCK))
 		exit_error("The value specified by mutex is unintialized.\n");
 	else if (status == EINVAL && (mtxcode == CREATE))
-		exit_error("The value specified by atr is invalid.\n")
+		exit_error("The value specified by atr is invalid.\n");
 	else if (status == EDEADLK)
-		exit_error("Mutex is locked by another thread.\n")
+		exit_error("Mutex is locked by another thread.\n");
 	else if (status == ENOMEM)
-		exit_error("Not enough memory to create another mutex.\n")
+		exit_error("Not enough memory to create another mutex.\n");
 	else
 		exit_error("An error outside code's specification happened with \
 		mutex.\n");
