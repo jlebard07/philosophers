@@ -22,8 +22,8 @@
 # include <limits.h>
 # include <errno.h>
 
-//énumération fonctions mutex
-typedef enum e_mtxcode
+//enum fonctions mutex
+typedef enum	e_mtxcode
 {
 	LOCK,
 	UNLOCK,
@@ -31,16 +31,27 @@ typedef enum e_mtxcode
 	DESTROY,
 }	t_mtxcode;
 
-//énumération fonctinos threads
-typedef enum e_thcode
+//enum fonctions threads
+typedef enum	e_thcode
 {
 	CREATE,
 	JOIN,
 	DETACH,
 }	t_thcode;
 
+//enum statuts
+typedef enum 	e_status
+{
+	EAT,
+	SLEEP,
+	THINK,
+	DEAD,
+	TAKE_FIRST_FORK,
+	TAKE_SECOND_FORK,
+}	t_status;
+
 //struct pour les philos
-typedef struct s_philos
+typedef struct	s_philos
 {
 	int			id_philo;
 	int			nb_of_meals;
@@ -52,7 +63,7 @@ typedef struct s_philos
 }	t_philo;
 
 // struct pour les forks
-typedef struct s_forks
+typedef struct	s_forks
 {
 	int				id_fork;
 	pthread_mutex_t	mtx_fork;
@@ -61,17 +72,19 @@ typedef struct s_forks
 // struct règles
 typedef struct	s_rules
 {
-	int			nb_of_philo;
-	long		die_time;
-	long		eat_time;
-	long		sleep_time;
-	int			must_eat;
-	bool		threads_ready;
+	int				nb_of_philo;
+	long			die_time;
+	long			eat_time;
+	long			sleep_time;
+	int				must_eat;
+	bool			threads_ready;
+	bool			finish;
 	pthread_mutex_t	rules_mtx;
+	pthread_mutex_t	write_mutex;
 }	t_rules;
 
 // struct global 
-typedef struct s_dinner
+typedef struct	s_dinner
 {
 	t_rules		rules;
 	t_fork		*forks;
@@ -83,9 +96,10 @@ void	handle_mutex(pthread_mutex_t *mutex, t_mtxcode mtxcode);
 void	handle_thread(pthread_t *thread, void *(*f)(void*), void *arg,
 						t_thcode thcode);
 
-// erreurs et free
+// utils
 void	exit_error(char *s);
-void	free_dinner(t_dinner *dinner);
+long	get_time(bool sc);
+void	my_usleep(long usec, t_dinner *dinner);
 
 //getters and setters
 void	set_bool(pthread_mutex_t mtx, bool *dest, bool value);

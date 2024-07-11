@@ -66,7 +66,11 @@ void	init_dinner(t_dinner *dinner)
 	int	i;
 
 	i = 0;
+	dinner->rules.finish = 0;
+	dinner->rules.threads_ready = 0;
 	dinner->forks = malloc(sizeof(t_fork) * dinner->rules.nb_of_philo);
+	handle_mutex(&(dinner->rules.rules_mtx), CREATE);
+	handle_mutex(&(dinner->rules.write_mutex), CREATE);
 	if (dinner->forks = NULL)
 		exit_error("Pb Malloc.\n");
 	while (i < dinner->rules.nb_of_philo)
