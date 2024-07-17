@@ -29,7 +29,7 @@
 //enum pour les mutex
 typedef enum	e_mutex_code
 {
-	CREATE,
+	INIT,
 	DESTROY,
 	LOCK,
 	UNLOCK,
@@ -53,6 +53,8 @@ typedef enum	e_action_code
 	THINKS,
 	DEAD,
 }	t_action_code;
+
+typedef struct s_dinner t_dinner;
 
 //structure pour les forks
 typedef struct	s_fork
@@ -79,7 +81,7 @@ typedef struct	s_philo
 typedef struct	s_dinner
 {
 	int				nb_philo;
-	int				nb_meals;
+	long			nb_meals;
 	long			time_to_die;
 	long			time_to_eat;
 	long			time_to_sleep;
@@ -111,7 +113,8 @@ int		parse(t_dinner *dinner, char **argv);
 int		init_data(t_dinner *dinner);
 
 //simulation
-int		begin_simulation(t_dinner *dinner);
+void	begin_simulation(t_dinner *dinner);
+void	*actual_dinner(void *data);
 
 //main
 

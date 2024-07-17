@@ -31,9 +31,9 @@ static long	ft_atol(char *s)
 
 	i = 0;
 	res = 0;
-	while (s[i] = ' ' || (s[i] > 8 && s[i] < 14))
+	while ((s[i] == ' ') || (s[i] > 8 && s[i] < 14))
 		i++;
-	if ((s[i] < '0' && s[i] > '9') || s[i] != '+')
+	if ((s[i] < '0' || s[i] > '9') && s[i] != '+')
 		return (-1);
 	if (s[i] == '+')
 		i++;
@@ -61,7 +61,7 @@ int	parse(t_dinner *dinner, char **argv)
 	while (argv[++i])
 	{
 		res = ft_atol(argv[i]);
-		if (res = -1)
+		if (res == -1)
 			return (-1);
 		if (i == 1)
 			dinner->nb_philo = (int)res;

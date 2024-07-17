@@ -20,17 +20,18 @@ static void	clear_the_table(t_dinner *dinner)
 	while (i < dinner->nb_philo)
 	{
 		handle_mutex(&(dinner->philos[i].philo_mtx), DESTROY);
-		free(&(dinner->philos[i++]));
+		free(&(dinner->philos[i]));
+		i++;
 	}
 	i = 0;
 	while (i < dinner->nb_philo)
 	{
 		handle_mutex(&(dinner->forks[i].fork_mtx), DESTROY);
-		free(&(dinner->philos[i++]));
+		free(&(dinner->philos[i]));
+		i++;
 	}
 	handle_mutex(&(dinner->write_mtx), DESTROY);
 	handle_mutex(&(dinner->dinner_mtx), DESTROY);
-	free(&dinner);
 }
 
 int	main(int argc, char **argv)
@@ -41,7 +42,7 @@ int	main(int argc, char **argv)
 	{
 		if (parse(&dinner, argv) == -1)
 		{
-			printf(R"Please enter correct args.\n"RST);
+			printf(R "Please enter correct args.\n" RST);
 			return (1);
 		}
 		if (init_data(&dinner) == -1)
@@ -49,10 +50,10 @@ int	main(int argc, char **argv)
 			return (1);
 			clear_the_table(&dinner);
 		}
-		begin_simulation(&dinner);
+		begin_simulation(&dinner); 
 		clear_the_table(&dinner);
 	}
 	else
-		printf(R"%sPlease enter 5 or 6 args.\n%s"RST);
+		printf(R "Please enter 5 or 6 args.\n" RST);
 	return (0);
 }

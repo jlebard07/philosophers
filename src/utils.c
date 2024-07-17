@@ -6,7 +6,7 @@
 /*   By: jlebard <jlebard@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 10:43:18 by jlebard           #+#    #+#             */
-/*   Updated: 2024/07/17 11:44:42 by jlebard          ###   ########.fr       */
+/*   Updated: 2024/07/17 15:16:48 by jlebard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,25 +47,27 @@ void	write_action(t_action_code code, t_philo *philo)
 {
 	long	time_goes_by_so_slowly;
 	
+	if (philo->dinner->finished == 1)
+		return ;
 	time_goes_by_so_slowly = get_time(0, 1) - philo->dinner->start_time;
 	handle_mutex(&(philo->dinner->write_mtx), LOCK);
 	if (code == EATS)
-		printf(B"%-5ld"RST"%sThe philo %d is eating.\n%s",
+		printf(B"%-5ld"RST"The philo %d is eating.\n",
 		time_goes_by_so_slowly, philo->philo_id);		
 	else if (code == THINKS)
-		printf(B"%-5ld"RST"%sThe philo %d is thinking.\n%s",
+		printf(B"%-5ld"RST"The philo %d is thinking.\n",
 		time_goes_by_so_slowly, philo->philo_id);
 	else if (code == SLEEPS)
-		printf(B"%-5ld"RST"%sThe philo %d is sleeping.\n%s",
+		printf(B"%-5ld"RST"The philo %d is sleeping.\n",
 		time_goes_by_so_slowly, philo->philo_id);
 	else if (code == TAKE_FIRST_FORK)
-		printf(B"%-5ld"RST"%sThe philo %d has grabbed fork 1.\n%s",
+		printf(B"%-5ld"RST"The philo %d has grabbed fork 1.\n",
 		time_goes_by_so_slowly, philo->philo_id);	
 	else if (code == TAKE_SCND_FORK)
-		printf(B"%-5ld"RST"%sThe philo %d has grabbed fork 2.\n%s",
+		printf(B"%-5ld"RST"The philo %d has grabbed fork 2.\n",
 		time_goes_by_so_slowly, philo->philo_id);		
 	else if (code == DEAD)
-		printf(B"%-5ld"RST"%sThe philo %d is dead.\n%s",
+		printf(B"%-5ld"RST"The philo %d is dead.\n",
 		time_goes_by_so_slowly, philo->philo_id);
 	handle_mutex(&(philo->dinner->write_mtx), UNLOCK);
 }
