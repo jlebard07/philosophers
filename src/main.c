@@ -12,6 +12,27 @@
 
 #include "../includes/philo.h"
 
+static void	clear_the_table(t_dinner *dinner)
+{
+	int	i;
+
+	i = 0;
+	while (i < dinner->nb_philo)
+	{
+		handle_mutex(&(dinner->philos[i].philo_mtx), DESTROY);
+		free(&(dinner->philos[i++]));
+	}
+	i = 0;
+	while (i < dinner->nb_philo)
+	{
+		handle_mutex(&(dinner->forks[i].fork_mtx), DESTROY);
+		free(&(dinner->philos[i++]));
+	}
+	handle_mutex(&(dinner->write_mtx), DESTROY);
+	handle_mutex(&(dinner->dinner_mtx), DESTROY);
+	free(&dinner);
+}
+
 int	main(int argc, char **argv)
 {
 	t_dinner	dinner;
@@ -20,14 +41,18 @@ int	main(int argc, char **argv)
 	{
 		if (parse(&dinner, argv) == -1)
 		{
-			ft_putstr_fd("Please enter correct args.\n", 2);
+			printf(R"Please enter correct args.\n"RST);
 			return (1);
 		}
 		if (init_data(&dinner) == -1)
+		{
 			return (1);
+			clear_the_table(&dinner);
+		}
 		begin_simulation(&dinner);
+		clear_the_table(&dinner);
 	}
 	else
-		ft_putstr_fd("Please enter 5 or 6 args.\n", 2);
+		printf(R"%sPlease enter 5 or 6 args.\n%s"RST);
 	return (0);
 }

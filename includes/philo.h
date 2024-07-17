@@ -21,13 +21,12 @@
 # include <limits.h>
 # include <errno.h>
 
-# define GREEN "\e[0;32m"
-# define BLUE "\e[0;34m"
-# define RED "\e[0;31m"
-# define RESET "\e[0m"
+# define G "\e[0;32m"
+# define B "\e[0;34m"
+# define R "\e[0;31m"
+# define RST "\e[0m"
 
 //enum pour les mutex
-
 typedef enum	e_mutex_code
 {
 	CREATE,
@@ -36,12 +35,24 @@ typedef enum	e_mutex_code
 	UNLOCK,
 }	t_mutex_code;
 
+//enum pour les threads
 typedef enum	e_thread_code
 {
 	CREATE,
 	JOIN,
 	DETACH,
 }	t_thread_code;
+
+//enum pour  les actions
+typedef enum	e_action_code
+{
+	EATS,
+	TAKE_FIRST_FORK,
+	TAKE_SCND_FORK,
+	SLEEPS,
+	THINKS,
+	DEAD,
+}	t_action_code;
 
 //structure pour les forks
 typedef struct	s_fork
@@ -54,8 +65,8 @@ typedef struct	s_fork
 typedef struct	s_philo
 {
 	int				philo_id;
-	int				eaten_nb;
-	long			time_since_last_meal;	
+	long			eaten_nb;
+	long			last_meal_time;	
 	bool			full;
 	pthread_mutex_t	philo_mtx;
 	pthread_t		philo_thread;
@@ -72,18 +83,26 @@ typedef struct	s_dinner
 	long			time_to_die;
 	long			time_to_eat;
 	long			time_to_sleep;
+	long			start_time;
 	bool			finished;
 	bool			threads_ready;
 	pthread_mutex_t	dinner_mtx;
+	pthread_mutex_t write_mtx;
 	t_fork			*forks;
 	t_philo			*philos;
 }	t_dinner;
 
 //utils
-void	ft_putstr_fd(char *s, int fd);
 int		handle_mutex(pthread_mutex_t *mtx, t_mutex_code code);
 int		handle_thread(pthread_t *th, void *(*f)(void *), void *data,
 					t_thread_code code);
+void	set_bool(bool *dest, bool b, pthread_mutex_t *mtx);
+bool	get_bool(bool *to_get, pthread_mutex_t *mtx);
+void	set_long(long *dest, long l, pthread_mutex_t *mtx);
+long	get_long(long *to_get, pthread_mutex_t *mtx);
+long	get_time(bool second, bool mili);
+void	precise_usleep(long time_to_sleep);
+void	write_action(t_action_code code, t_philo *philo);
 
 //parsing
 int		parse(t_dinner *dinner, char **argv);

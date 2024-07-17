@@ -39,11 +39,11 @@ int	handle_mutex(pthread_mutex_t *mtx, t_mutex_code code)
 	if (handle_mutex_bis(mtx, code) == -1)
 	{
 		if (code == DESTROY)
-			printf("%sAn error occured destroying a mutex.\n%s", RED, RESET);
+			printf(R"An error occured destroying a mutex.\n"RST);
 		else if (code == LOCK)
-			printf("%sAn error occured locking a mutex.\n%s", RED, RESET);
+			printf(R"An error occured locking a mutex.\n"RST);
 		else if (code == UNLOCK)
-			printf("%sAn error occured unlocking a mutex.\n%s", RED, RESET);
+			printf(R"An error occured unlocking a mutex.\n"RST);
 		return (-1);
 	}
 	return (0);
@@ -76,11 +76,11 @@ int	handle_thread(pthread_t *th, void *(*f)(void *), void *data,
 	if (handle_thread_bis(th, f, data, code) == -1)
 	{
 		if (code == DESTROY)
-			printf("%sAn error occured creating a thread.\n%s", RED, RESET);
+			printf(R"An error occured creating a thread.\n"RST);
 		else if (code == JOIN)
-			printf("%sAn error occured joining a thread.\n%s", RED, RESET);
+			printf(R"%sAn error occured joining a thread.\n"RST);
 		else if (code == DETACH)
-			printf("%sAn error occured detaching a thread.\n%s", RED, RESET);
+			printf(R"%sAn error occured detaching a thread.\n"RST);
 		return (-1);
 	}
 	return (0);

@@ -5,22 +5,68 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: jlebard <jlebard@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/07/11 16:19:03 by jlebard           #+#    #+#             */
-/*   Updated: 2024/07/11 16:19:03 by jlebard          ###   ########.fr       */
+/*   Created: 2024/07/17 10:43:18 by jlebard           #+#    #+#             */
+/*   Updated: 2024/07/17 11:44:42 by jlebard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philo.h"
 
-void	ft_putstr_fd(char *s, int fd)
+long	get_time(bool second, bool mls)
 {
-	int	i;
+	struct timeval	time;
 
-	i = 0;
-	while (s[i])
+	gettimeofday(&time, NULL);
+	if (second == 1)
+		return (time.tv_sec + time.tv_usec / 1e6);
+	else if (mls == 1)
+		return (time.tv_sec * 1e3 + time.tv_usec / 1e3);
+	else
+		return (time.tv_sec * 1e6 + time.tv_usec);
+	return (0);
+}
+
+void	precise_usleep(long time_to_sleep)
+{
+	long	start;
+	long	time_left;
+
+	start = get_time(0, 0);
+	while (get_time(0, 0) - start < time_to_sleep)
 	{
-		write(fd, &s[i], 1);
-		i++;
+		time_left = (time_to_sleep - (get_time(0, 0) - start));
+		if (time_left > 1000)
+			usleep(time_left / 2);
+		else
+			while (get_time(0, 0) - start < time_to_sleep)
+				;
 	}
+}
+
+void	write_action(t_action_code code, t_philo *philo)
+{
+	long	time_goes_by_so_slowly;
+	
+	time_goes_by_so_slowly = get_time(0, 1) - philo->dinner->start_time;
+	handle_mutex(&(philo->dinner->write_mtx), LOCK);
+	if (code == EATS)
+		printf(B"%-5ld"RST"%sThe philo %d is eating.\n%s",
+		time_goes_by_so_slowly, philo->philo_id);		
+	else if (code == THINKS)
+		printf(B"%-5ld"RST"%sThe philo %d is thinking.\n%s",
+		time_goes_by_so_slowly, philo->philo_id);
+	else if (code == SLEEPS)
+		printf(B"%-5ld"RST"%sThe philo %d is sleeping.\n%s",
+		time_goes_by_so_slowly, philo->philo_id);
+	else if (code == TAKE_FIRST_FORK)
+		printf(B"%-5ld"RST"%sThe philo %d has grabbed fork 1.\n%s",
+		time_goes_by_so_slowly, philo->philo_id);	
+	else if (code == TAKE_SCND_FORK)
+		printf(B"%-5ld"RST"%sThe philo %d has grabbed fork 2.\n%s",
+		time_goes_by_so_slowly, philo->philo_id);		
+	else if (code == DEAD)
+		printf(B"%-5ld"RST"%sThe philo %d is dead.\n%s",
+		time_goes_by_so_slowly, philo->philo_id);
+	handle_mutex(&(philo->dinner->write_mtx), UNLOCK);
 }
 

@@ -52,7 +52,7 @@ static int	init_philos(t_dinner *dinner)
 	{
 		philos[i].philo_id = i + 1;
 		philos[i].eaten_nb = 0;
-		philos[i].time_since_last_meal = 0;
+		philos[i].last_meal_time = 0;
 		philos[i].full = 0;
 		philos[i].dinner = dinner;
 		if (handle_mutex(&(philos[i].philo_mtx), CREATE) == -1)
@@ -77,6 +77,8 @@ int	init_data(t_dinner *dinner)
 	i = 0;
 	dinner->finished = 0;
 	dinner->threads_ready = 0;
+	handle_mutex(&(dinner->dinner_mtx), CREATE);
+	handle_mutex(&(dinner->write_mtx), CREATE);
 	dinner->forks = malloc(dinner->nb_philo * sizeof(t_fork));
 	if (dinner->forks == NULL)
 		return (-1);
