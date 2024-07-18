@@ -30,6 +30,7 @@ static void	clear_the_table(t_dinner *dinner)
 		free(&(dinner->philos[i]));
 		i++;
 	}
+	i = 0;
 	handle_mutex(&(dinner->write_mtx), DESTROY);
 	handle_mutex(&(dinner->dinner_mtx), DESTROY);
 }
@@ -50,7 +51,7 @@ int	main(int argc, char **argv)
 			return (1);
 			clear_the_table(&dinner);
 		}
-		begin_simulation(&dinner); 
+		begin_simulation(&dinner);
 		clear_the_table(&dinner);
 	}
 	else

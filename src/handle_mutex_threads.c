@@ -28,7 +28,7 @@ static int	handle_mutex_bis(pthread_mutex_t *mtx, t_mutex_code code)
 	}
 	else if (code == UNLOCK)
 	{
-		if (pthread_mutex_lock(mtx) != 0)
+		if (pthread_mutex_unlock(mtx) != 0)
 			return (-1);
 	}
 	return (0);

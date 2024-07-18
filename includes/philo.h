@@ -72,8 +72,8 @@ typedef struct	s_philo
 	bool			full;
 	pthread_mutex_t	philo_mtx;
 	pthread_t		philo_thread;
-	t_fork			*first_fork;
-	t_fork			*second_fork;
+	pthread_mutex_t	*first_fork;
+	pthread_mutex_t	*second_fork;
 	t_dinner		*dinner;
 }	t_philo;
 

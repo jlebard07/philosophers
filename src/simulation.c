@@ -20,9 +20,9 @@ static void	sleeping(t_philo *philo)
 
 static void	eating(t_philo *philo)
 {
-	handle_mutex(&(philo->first_fork->fork_mtx), LOCK);
+	handle_mutex(philo->first_fork, LOCK);
 	write_action(TAKE_FIRST_FORK, philo);
-	handle_mutex(&(philo->second_fork->fork_mtx), LOCK);
+	handle_mutex(philo->second_fork, LOCK);
 	write_action(TAKE_SCND_FORK, philo);
 	write_action(EATS, philo);
 	set_long(&(philo->last_meal_time), get_time(0, 1), &(philo->philo_mtx));
@@ -31,8 +31,8 @@ static void	eating(t_philo *philo)
 	if (philo->dinner->nb_meals != -1
 		&& philo->eaten_nb == philo->dinner->nb_meals)
 		philo->full = 1;
-	handle_mutex(&(philo->first_fork->fork_mtx), UNLOCK);
-	handle_mutex(&(philo->second_fork->fork_mtx), UNLOCK);
+	handle_mutex(philo->first_fork, UNLOCK);
+	handle_mutex(philo->second_fork, UNLOCK);
 }
 
 void	*actual_dinner(void *data)
@@ -41,7 +41,8 @@ void	*actual_dinner(void *data)
 
 	philo = (t_philo *)data;
 	printf("Thread n%d created.\n", philo->philo_id);
-	while (philo->dinner->threads_ready == 0)
+	while (get_bool(&(philo->dinner->threads_ready),
+		&(philo->dinner->dinner_mtx)) == 0)
 		;
 	printf("Thread ready.\n");
 	while (philo->dinner->finished == 0)
@@ -66,12 +67,8 @@ void	begin_simulation(t_dinner *dinner)
 		&(dinner->philos[i]), CREATE);
 		i++;
 	}
-	dinner->threads_ready = 1;
 	set_bool(&(dinner->threads_ready), 1, &(dinner->dinner_mtx));
-	while (i >= 0)
-	{
-		handle_thread(&(dinner->philos[i].philo_thread),
-			NULL, NULL, JOIN);
-		i--;
-	}
+	set_long(&(dinner->start_time), get_time(0, 1), &(dinner->dinner_mtx));
+	while (--i >= 0)
+		handle_thread(&(dinner->philos[i].philo_thread), NULL, NULL, JOIN);
 }

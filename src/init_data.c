@@ -12,35 +12,22 @@
 
 #include "../includes/philo.h"
 
-static t_fork	*find_fork(t_fork *forks, int id, int max)
+static void	assign_forks(t_philo *philo, t_fork *forks)
 {
-	int	i;
-
-	i = 0;
-	while (id != forks[i].fork_id && i < max)
-		i++;
-	return (&forks[i]);
-}
-
-static void	assign_forks(t_philo philo, t_fork *forks)
-{
-	int	max;
-
-	max = philo.dinner->nb_philo;
-	if (philo.philo_id == philo.dinner->nb_philo)
+	if (philo->philo_id == philo->dinner->nb_philo)
 	{
-		philo.first_fork = find_fork(forks, 1, max);
-		philo.second_fork = find_fork(forks, philo.philo_id, max);
+		philo->first_fork = &(forks[0].fork_mtx);
+		philo->second_fork = &(forks[philo->philo_id - 1].fork_mtx);
 	}
-	else if (philo.philo_id % 2 == 1)
+	else if (philo->philo_id % 2 == 1)
 	{
-		philo.first_fork = find_fork(forks, philo.philo_id + 1, max);
-		philo.second_fork = find_fork(forks, philo.philo_id, max);
+		philo->first_fork = &(forks[philo->philo_id].fork_mtx);
+		philo->second_fork = &(forks[philo->philo_id - 1].fork_mtx);
 	}
-	else if (philo.philo_id % 2 == 0)
+	else if (philo->philo_id % 2 == 0)
 	{
-		philo.first_fork = find_fork(forks, philo.philo_id, max);
-		philo.second_fork = find_fork(forks, philo.philo_id + 1, max);
+		philo->first_fork = &(forks[philo->philo_id - 1].fork_mtx);
+		philo->second_fork = &(forks[philo->philo_id].fork_mtx);
 	}
 }
 
@@ -60,7 +47,7 @@ static int	init_philos(t_dinner *dinner)
 		philos[i].dinner = dinner;
 		if (handle_mutex(&(philos[i].philo_mtx), INIT) == -1)
 			return (-1);
-		assign_forks(philos[i], dinner->forks);
+		assign_forks(&(philos[i]), dinner->forks);
 		i++;
 	}
 	return (0);
