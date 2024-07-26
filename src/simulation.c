@@ -15,7 +15,7 @@
 static void	sleeping(t_philo *philo)
 {
 	write_action(SLEEPS, philo);
-	precise_usleep(philo->dinner->time_to_sleep);
+	precise_usleep(philo->dinner->time_to_sleep * 1e3);
 }
 
 static void	eating(t_philo *philo)
@@ -25,9 +25,15 @@ static void	eating(t_philo *philo)
 	handle_mutex(philo->second_fork, LOCK);
 	write_action(TAKE_SCND_FORK, philo);
 	write_action(EATS, philo);
-	set_long(&(philo->last_meal_time), get_time(0, 1), &(philo->philo_mtx));
+	if (get_time(0, 1) - philo->last_meal_time > 
+		get_long(&(philo->dinner->time_to_die), &(philo->dinner->dinner_mtx)))
+	{
+		set_bool(&(philo->dead), 1, &(philo->philo_mtx));
+		return ;
+	}
+	philo->last_meal_time = get_time(0, 1);
 	philo->eaten_nb++;
-	precise_usleep(philo->dinner->time_to_eat);
+	precise_usleep(philo->dinner->time_to_eat * 1e3);
 	if (philo->dinner->nb_meals != -1
 		&& philo->eaten_nb == philo->dinner->nb_meals)
 		philo->full = 1;
@@ -47,13 +53,37 @@ void	*actual_dinner(void *data)
 	printf("Thread ready.\n");
 	while (philo->dinner->finished == 0)
 	{
-		if (philo->full)
+		if (philo->full || philo->dead)
 			break ;
 		eating(philo);
 		sleeping(philo);
 		write_action(THINKS, philo);
 	}
 	return (NULL);
+}
+
+void	finishing(t_dinner *dinner)
+{
+	int	i;
+	int j;
+
+	j = 0;
+	i = 0;	
+	while (j != dinner->nb_philo)
+	{
+		j = 0;
+		while (i < dinner->nb_philo)
+		{
+			if (get_bool(&(dinner->philos[i].dead), &(dinner->philos[i].philo_mtx)) == 1)
+				break ;
+			if (get_bool(&(dinner->philos[i].full), &(dinner->philos[i].philo_mtx)) == 1)
+				j++;
+			i++;
+		}
+		i = 0;
+	}
+	printf(B"%-5ld"RST"Simulation finished.\n", get_time(0, 1));
+	dinner->finished = 1;
 }
 
 void	begin_simulation(t_dinner *dinner)
@@ -69,6 +99,7 @@ void	begin_simulation(t_dinner *dinner)
 	}
 	set_bool(&(dinner->threads_ready), 1, &(dinner->dinner_mtx));
 	set_long(&(dinner->start_time), get_time(0, 1), &(dinner->dinner_mtx));
+	finishing(dinner);
 	while (--i >= 0)
 		handle_thread(&(dinner->philos[i].philo_thread), NULL, NULL, JOIN);
 }

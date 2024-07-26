@@ -45,6 +45,7 @@ static int	init_philos(t_dinner *dinner)
 		philos[i].last_meal_time = 0;
 		philos[i].full = 0;
 		philos[i].dinner = dinner;
+		philos[i].dead = 0;
 		if (handle_mutex(&(philos[i].philo_mtx), INIT) == -1)
 			return (-1);
 		assign_forks(&(philos[i]), dinner->forks);
@@ -68,6 +69,7 @@ int	init_data(t_dinner *dinner)
 	i = 0;
 	dinner->finished = 0;
 	dinner->threads_ready = 0;
+	dinner->full_nb = 0;
 	handle_mutex(&(dinner->dinner_mtx), INIT);
 	handle_mutex(&(dinner->write_mtx), INIT);
 	dinner->forks = malloc(dinner->nb_philo * sizeof(t_fork));
