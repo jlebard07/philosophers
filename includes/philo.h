@@ -70,6 +70,7 @@ typedef struct	s_philo
 	long			eaten_nb;
 	long			last_meal_time;	
 	bool			full;
+	bool			dead;
 	pthread_mutex_t	philo_mtx;
 	pthread_t		philo_thread;
 	pthread_mutex_t	*first_fork;
@@ -81,13 +82,14 @@ typedef struct	s_philo
 typedef struct	s_dinner
 {
 	int				nb_philo;
-	long			nb_meals;
 	long			time_to_die;
 	long			time_to_eat;
 	long			time_to_sleep;
 	long			start_time;
+	long			nb_meals;
+	long			ready_nb;
 	bool			finished;
-	bool			threads_ready;
+	pthread_t		monitor;
 	pthread_mutex_t	dinner_mtx;
 	pthread_mutex_t write_mtx;
 	t_fork			*forks;
@@ -102,6 +104,7 @@ void	set_bool(bool *dest, bool b, pthread_mutex_t *mtx);
 bool	get_bool(bool *to_get, pthread_mutex_t *mtx);
 void	set_long(long *dest, long l, pthread_mutex_t *mtx);
 long	get_long(long *to_get, pthread_mutex_t *mtx);
+void	inc_long(long *dest, pthread_mutex_t *mtx);
 long	get_time(bool second, bool mili);
 void	precise_usleep(long time_to_sleep);
 void	write_action(t_action_code code, t_philo *philo);
@@ -115,6 +118,9 @@ int		init_data(t_dinner *dinner);
 //simulation
 void	begin_simulation(t_dinner *dinner);
 void	*actual_dinner(void *data);
+void	*f_monitor(void	*data);
+void	*im_so_lonely(void *data);
+bool	end_simulation(t_dinner *dinner);
 
 //main
 

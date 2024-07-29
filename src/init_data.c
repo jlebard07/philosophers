@@ -68,8 +68,7 @@ int	init_data(t_dinner *dinner)
 	
 	i = 0;
 	dinner->finished = 0;
-	dinner->threads_ready = 0;
-	dinner->full_nb = 0;
+	dinner->ready_nb = 0;
 	handle_mutex(&(dinner->dinner_mtx), INIT);
 	handle_mutex(&(dinner->write_mtx), INIT);
 	dinner->forks = malloc(dinner->nb_philo * sizeof(t_fork));

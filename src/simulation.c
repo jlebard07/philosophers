@@ -25,18 +25,12 @@ static void	eating(t_philo *philo)
 	handle_mutex(philo->second_fork, LOCK);
 	write_action(TAKE_SCND_FORK, philo);
 	write_action(EATS, philo);
-	if (get_time(0, 1) - philo->last_meal_time > 
-		get_long(&(philo->dinner->time_to_die), &(philo->dinner->dinner_mtx)))
-	{
-		set_bool(&(philo->dead), 1, &(philo->philo_mtx));
-		return ;
-	}
-	philo->last_meal_time = get_time(0, 1);
-	philo->eaten_nb++;
+	set_long(&philo->last_meal_time, get_time(0, 1), &philo->philo_mtx);
 	precise_usleep(philo->dinner->time_to_eat * 1e3);
+	philo->eaten_nb++;
 	if (philo->dinner->nb_meals != -1
 		&& philo->eaten_nb == philo->dinner->nb_meals)
-		philo->full = 1;
+		set_bool(&philo->full, 1, &philo->philo_mtx);
 	handle_mutex(philo->first_fork, UNLOCK);
 	handle_mutex(philo->second_fork, UNLOCK);
 }
@@ -46,14 +40,12 @@ void	*actual_dinner(void *data)
 	t_philo	*philo;
 
 	philo = (t_philo *)data;
+	inc_long(&philo->dinner->ready_nb, &philo->dinner->dinner_mtx);
+	set_long(&philo->last_meal_time, get_time(0, 1), &philo->philo_mtx);
 	printf("Thread n%d created.\n", philo->philo_id);
-	while (get_bool(&(philo->dinner->threads_ready),
-		&(philo->dinner->dinner_mtx)) == 0)
-		;
-	printf("Thread ready.\n");
-	while (philo->dinner->finished == 0)
+	while (!end_simulation(philo->dinner))
 	{
-		if (philo->full || philo->dead)
+		if (get_bool(&philo->full, &philo->philo_mtx) == 1)
 			break ;
 		eating(philo);
 		sleeping(philo);
@@ -62,28 +54,19 @@ void	*actual_dinner(void *data)
 	return (NULL);
 }
 
-void	finishing(t_dinner *dinner)
+void	*im_so_lonely(void *data)
 {
-	int	i;
-	int j;
+	t_philo	*philo;
 
-	j = 0;
-	i = 0;	
-	while (j != dinner->nb_philo)
-	{
-		j = 0;
-		while (i < dinner->nb_philo)
-		{
-			if (get_bool(&(dinner->philos[i].dead), &(dinner->philos[i].philo_mtx)) == 1)
-				break ;
-			if (get_bool(&(dinner->philos[i].full), &(dinner->philos[i].philo_mtx)) == 1)
-				j++;
-			i++;
-		}
-		i = 0;
-	}
-	printf(B"%-5ld"RST"Simulation finished.\n", get_time(0, 1));
-	dinner->finished = 1;
+	philo = (t_philo *)data;
+	inc_long(&philo->dinner->ready_nb, &philo->dinner->dinner_mtx);
+	set_long(&philo->last_meal_time, get_time(0, 1), &philo->philo_mtx);
+	handle_mutex(philo->first_fork, LOCK);
+	write_action(TAKE_FIRST_FORK, philo);
+	while (!end_simulation(philo->dinner))
+		usleep (600);
+	handle_mutex(philo->first_fork, UNLOCK);
+	return (NULL);
 }
 
 void	begin_simulation(t_dinner *dinner)
@@ -91,15 +74,24 @@ void	begin_simulation(t_dinner *dinner)
 	int	i;
 
 	i = 0;
-	while (i < dinner->nb_philo)
+	if (dinner->nb_meals == 0)
+		return ;
+	else if (dinner->nb_philo == 1)
+		handle_thread(&dinner->philos[i].philo_thread, im_so_lonely,
+		&dinner->philos[i], CREATE);
+	else
 	{
-		handle_thread(&(dinner->philos[i].philo_thread), actual_dinner,
-		&(dinner->philos[i]), CREATE);
-		i++;
+		while (i < dinner->nb_philo)
+		{
+			handle_thread(&(dinner->philos[i].philo_thread), actual_dinner,
+			&(dinner->philos[i]), CREATE);
+			i++;
+		}
 	}
-	set_bool(&(dinner->threads_ready), 1, &(dinner->dinner_mtx));
-	set_long(&(dinner->start_time), get_time(0, 1), &(dinner->dinner_mtx));
-	finishing(dinner);
+	dinner->start_time = get_time(0, 1);
 	while (--i >= 0)
 		handle_thread(&(dinner->philos[i].philo_thread), NULL, NULL, JOIN);
+	handle_thread(&dinner->monitor, NULL, NULL, JOIN);
+	set_bool(&dinner->finished, 1, &dinner->dinner_mtx);
+	handle_thread(&dinner->monitor, f_monitor, dinner, CREATE);
 }

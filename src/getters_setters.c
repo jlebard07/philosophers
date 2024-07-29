@@ -47,3 +47,10 @@ long	get_long(long *to_get, pthread_mutex_t *mtx)
 	handle_mutex(mtx, UNLOCK);
 	return (dest);
 }
+
+void	inc_long(long *dest, pthread_mutex_t *mtx)
+{
+	handle_mutex(mtx, LOCK);
+	(*dest)++;
+	handle_mutex(mtx, UNLOCK);
+}

@@ -72,7 +72,7 @@ int	parse(t_dinner *dinner, char **argv)
 		else if (i == 4)
 			dinner->time_to_sleep = res;
 		else if (i == 5)
-			dinner->nb_meals = res;				
+			dinner->nb_meals = res;
 	}
 	return (0);
 }
