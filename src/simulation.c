@@ -83,14 +83,15 @@ void	begin_simulation(t_dinner *dinner)
 	{
 		while (i < dinner->nb_philo)
 		{
-			handle_thread(&(dinner->philos[i].philo_thread), actual_dinner,
+			handle_thread(&dinner->philos[i].philo_thread, actual_dinner,
 			&(dinner->philos[i]), CREATE);
 			i++;
 		}
 	}
 	dinner->start_time = get_time(0, 1);
+	handle_thread(&dinner->monitor, f_monitor, dinner, CREATE);
 	while (--i >= 0)
-		handle_thread(&(dinner->philos[i].philo_thread), NULL, NULL, JOIN);
+		handle_thread(&dinner->philos[i].philo_thread, NULL, NULL, JOIN);
 	handle_thread(&dinner->monitor, NULL, NULL, JOIN);
 	set_bool(&dinner->finished, 1, &dinner->dinner_mtx);
 	handle_thread(&dinner->monitor, f_monitor, dinner, CREATE);

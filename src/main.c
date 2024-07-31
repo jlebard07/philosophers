@@ -42,7 +42,7 @@ int	main(int argc, char **argv)
 	{
 		if (parse(&dinner, argv) == -1)
 		{
-			printf(R"Please enter correct args.\n"RST);
+			printf(R "Please enter correct args.\n" RST);
 			return (1);
 		}
 		if (init_data(&dinner) == -1)
@@ -54,6 +54,6 @@ int	main(int argc, char **argv)
 		clear_the_table(&dinner);
 	}
 	else
-		printf(R"Please enter 5 or 6 args.\n"RST);
+		printf(R "Please enter 5 or 6 args.\n" RST);
 	return (0);
 }
