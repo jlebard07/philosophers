@@ -6,7 +6,7 @@
 /*   By: jlebard <jlebard@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/17 10:43:18 by jlebard           #+#    #+#             */
-/*   Updated: 2024/07/29 12:46:16 by jlebard          ###   ########.fr       */
+/*   Updated: 2024/08/01 14:46:55 by jlebard          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,29 +46,28 @@ void	precise_usleep(long time_to_sleep)
 void	write_action(t_action_code code, t_philo *philo)
 {
 	long	time_goes_by_so_slowly;
-	
+
 	if (philo->dinner->finished == 1)
 		return ;
 	time_goes_by_so_slowly = get_time(0, 1) - philo->dinner->start_time;
 	handle_mutex(&(philo->dinner->write_mtx), LOCK);
 	if (code == EATS)
-		printf(B"%-5ld""The philo %d is eating.\n"RST,
-		time_goes_by_so_slowly, philo->philo_id);		
+		printf(B"%-5ld""%d is eating\n"RST,
+			time_goes_by_so_slowly, philo->philo_id);
 	else if (code == THINKS)
-		printf(B"%-5ld""The philo %d is thinking.\n"RST,
-		time_goes_by_so_slowly, philo->philo_id);
+		printf(B"%-5ld""%d is thinking\n"RST,
+			time_goes_by_so_slowly, philo->philo_id);
 	else if (code == SLEEPS)
-		printf(B"%-5ld"RST"The philo %d is sleeping.\n"RST,
-		time_goes_by_so_slowly, philo->philo_id);
+		printf(B"%-5ld"RST"%d is sleeping\n"RST,
+			time_goes_by_so_slowly, philo->philo_id);
 	else if (code == TAKE_FIRST_FORK)
-		printf(B"%-5ld"RST"The philo %d has grabbed 1st fork.\n",
-		time_goes_by_so_slowly, philo->philo_id);	
+		printf(B"%-5ld"RST"%d has taken a fork\n",
+			time_goes_by_so_slowly, philo->philo_id);
 	else if (code == TAKE_SCND_FORK)
-		printf(B"%-5ld"RST"The philo %d has grabbed 2nd fork.\n",
-		time_goes_by_so_slowly, philo->philo_id);		
+		printf(B"%-5ld"RST"%d has taken a fork\n",
+			time_goes_by_so_slowly, philo->philo_id);
 	else if (code == DEAD)
-		printf(B"%-5ld""The philo %d is dead.\n"RST,
-		time_goes_by_so_slowly, philo->philo_id);
+		printf(B"%-5ld""%d died\n"RST,
+			time_goes_by_so_slowly, philo->philo_id);
 	handle_mutex(&(philo->dinner->write_mtx), UNLOCK);
 }
-

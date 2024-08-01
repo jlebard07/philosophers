@@ -37,7 +37,7 @@ static void	clear_the_table(t_dinner *dinner)
 int	main(int argc, char **argv)
 {
 	t_dinner	dinner;
-	
+
 	if (argc == 5 || argc == 6)
 	{
 		if (parse(&dinner, argv) == -1)
@@ -45,6 +45,8 @@ int	main(int argc, char **argv)
 			printf(R "Please enter correct args.\n" RST);
 			return (1);
 		}
+		if (dinner.nb_philo == 0)
+			return (1);
 		if (init_data(&dinner) == -1)
 		{
 			clear_the_table(&dinner);

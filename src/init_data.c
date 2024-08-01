@@ -16,8 +16,8 @@ static void	assign_forks(t_philo *philo, t_fork *forks)
 {
 	if (philo->philo_id == philo->dinner->nb_philo)
 	{
-		philo->first_fork = &(forks[0].fork_mtx);
-		philo->second_fork = &(forks[philo->philo_id - 1].fork_mtx);
+		philo->second_fork = &(forks[0].fork_mtx);
+		philo->first_fork = &(forks[philo->philo_id - 1].fork_mtx);
 	}
 	else if (philo->philo_id % 2 == 1)
 	{
@@ -65,7 +65,7 @@ static int	init_fork(t_fork *fork, int nb)
 int	init_data(t_dinner *dinner)
 {
 	int	i;
-	
+
 	i = 0;
 	dinner->finished = 0;
 	dinner->ready_nb = 0;

@@ -12,11 +12,11 @@
 
 #include "../includes/philo.h"
 
-static bool not_too_long(char *s)
+static bool	not_too_long(char *s)
 {
 	int	i;
-	i = 0;
 
+	i = 0;
 	while (s[i])
 		i++;
 	if (i > 10)

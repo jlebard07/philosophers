@@ -1,6 +1,7 @@
 {
 	"files.autoSave": "onFocusChange",
 	"files.associations": {
-		"philosophers.h": "c"
+		"philosophers.h": "c",
+		"philo.h": "c"
 	}
 }

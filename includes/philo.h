@@ -27,7 +27,7 @@
 # define RST "\e[0m"
 
 //enum pour les mutex
-typedef enum	e_mutex_code
+typedef enum e_mutex_code
 {
 	INIT,
 	DESTROY,
@@ -36,7 +36,7 @@ typedef enum	e_mutex_code
 }	t_mutex_code;
 
 //enum pour les threads
-typedef enum	e_thread_code
+typedef enum e_thread_code
 {
 	CREATE,
 	JOIN,
@@ -44,7 +44,7 @@ typedef enum	e_thread_code
 }	t_thread_code;
 
 //enum pour  les actions
-typedef enum	e_action_code
+typedef enum e_action_code
 {
 	EATS,
 	TAKE_FIRST_FORK,
@@ -54,17 +54,17 @@ typedef enum	e_action_code
 	DEAD,
 }	t_action_code;
 
-typedef struct s_dinner t_dinner;
+typedef struct s_dinner	t_dinner;
 
 //structure pour les forks
-typedef struct	s_fork
+typedef struct s_fork
 {
 	int				fork_id;
 	pthread_mutex_t	fork_mtx;
 }	t_fork;
 
 //structure pour les philos
-typedef struct	s_philo
+typedef struct s_philo
 {
 	int				philo_id;
 	long			eaten_nb;
@@ -79,7 +79,7 @@ typedef struct	s_philo
 }	t_philo;
 
 //structure pour le dîner
-typedef struct	s_dinner
+typedef struct s_dinner
 {
 	int				nb_philo;
 	long			time_to_die;
@@ -91,7 +91,7 @@ typedef struct	s_dinner
 	bool			finished;
 	pthread_t		monitor;
 	pthread_mutex_t	dinner_mtx;
-	pthread_mutex_t write_mtx;
+	pthread_mutex_t	write_mtx;
 	t_fork			*forks;
 	t_philo			*philos;
 }	t_dinner;
@@ -99,7 +99,7 @@ typedef struct	s_dinner
 //utils
 int		handle_mutex(pthread_mutex_t *mtx, t_mutex_code code);
 int		handle_thread(pthread_t *th, void *(*f)(void *), void *data,
-					t_thread_code code);
+			t_thread_code code);
 void	set_bool(bool *dest, bool b, pthread_mutex_t *mtx);
 bool	get_bool(bool *to_get, pthread_mutex_t *mtx);
 void	set_long(long *dest, long l, pthread_mutex_t *mtx);
@@ -121,6 +121,7 @@ void	*actual_dinner(void *data);
 void	*f_monitor(void	*data);
 void	*im_so_lonely(void *data);
 bool	end_simulation(t_dinner *dinner);
+bool	threads_ready(t_dinner *dinner);
 
 //main
 
